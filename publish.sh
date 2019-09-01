@@ -8,3 +8,5 @@ rm -r ./*
 git co src -- public
 mv public/* .
 rm -r public
+git add . && git cm -m 'update site'
+git push -all
