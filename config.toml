@@ -162,7 +162,7 @@ defaultContentLanguage = "zh-cn"           # Default language to use
     enable = false
 
   [params.social]                                         # 社交链接
-    a-email = "jessun1990+blog@gmail.com"
+    a-email = "mailto:jessun1990+blog@gmail.com"
     #b-stack-overflow = "http://localhost:1313"
     #c-twitter = "http://localhost:1313"
     #d-facebook = "http://localhost:1313"
