@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Jessun&#39;s Blog</title>
+    <link>https://jessun1990.github.io/post/</link>
+    <description>Recent content in Posts on Jessun&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sat, 25 May 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://jessun1990.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Linux / Mac 系统 dotfiles 文件备份还原最佳实践</title>
+      <link>https://jessun1990.github.io/post/dotfiles/</link>
+      <pubDate>Sat, 25 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://jessun1990.github.io/post/dotfiles/</guid>
+      <description>Github 上的 Dotfiles 管理 在使用 Linux 和 Mac 系统时候， 常常需要同步 dotfiles。比如 fish 的配置文件在 ~/.config/fish/config.fish，vi</description>
+    </item>
+    
+    <item>
+      <title>Elastic 基本小结</title>
+      <link>https://jessun1990.github.io/post/es-intro/</link>
+      <pubDate>Wed, 15 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://jessun1990.github.io/post/es-intro/</guid>
+      <description>1. 简介 Elasticsearch 是一个基于 Lucene 库的搜索引擎。它提供了一个分布式、支持多租户的全文搜索引擎，具有 HTTP Web 接口和无模式JSON文档。Elasticsearch</description>
+    </item>
+    
+  </channel>
+</rss>
