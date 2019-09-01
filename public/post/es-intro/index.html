@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Elastic 基本小结 - Jessun&#39;s Blog</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="jessun" />
+  <meta name="description" content="1. 简介 Elasticsearch 是一个基于 Lucene 库的搜索引擎。它提供了一个分布式、支持多租户的全文搜索引擎，具有 HTTP Web 接口和无模式JSON文档。Elasticsearch" />
+
+  <meta name="keywords" content="Jessun" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.57.2" />
+
+
+<link rel="canonical" href="https://jessun1990.github.io/post/es-intro/" />
+
+
+
+<link rel="icon" href="/favicon.ico" />
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.af20b78e95c84de86b00a0242a4a77bd2601700e1b250edf27537d957ac0041d.css" integrity="sha256-ryC3jpXITehrAKAkKkp3vSYBcA4bJQ7fJ1N9lXrABB0=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Elastic 基本小结" />
+<meta property="og:description" content="1. 简介 Elasticsearch 是一个基于 Lucene 库的搜索引擎。它提供了一个分布式、支持多租户的全文搜索引擎，具有 HTTP Web 接口和无模式JSON文档。Elasticsearch" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://jessun1990.github.io/post/es-intro/" />
+<meta property="article:published_time" content="2019-05-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-09-02T01:15:47+08:00" /><meta property="og:site_name" content="Jessun&#39;s Blog" />
+<meta itemprop="name" content="Elastic 基本小结">
+<meta itemprop="description" content="1. 简介 Elasticsearch 是一个基于 Lucene 库的搜索引擎。它提供了一个分布式、支持多租户的全文搜索引擎，具有 HTTP Web 接口和无模式JSON文档。Elasticsearch">
+
+
+<meta itemprop="datePublished" content="2019-05-15T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-09-02T01:15:47&#43;08:00" />
+<meta itemprop="wordCount" content="3404">
+
+
+
+<meta itemprop="keywords" content="golang,elasticsearch,es," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Elastic 基本小结"/>
+<meta name="twitter:description" content="1. 简介 Elasticsearch 是一个基于 Lucene 库的搜索引擎。它提供了一个分布式、支持多租户的全文搜索引擎，具有 HTTP Web 接口和无模式JSON文档。Elasticsearch"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Jessun</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://jessun1990.github.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://jessun1990.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://jessun1990.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://jessun1990.github.io/categories/">Categories</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://gohugo.io" rel="noopener" target="_blank">
+              external-link
+              
+              <i class="iconfont">
+                <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M623.36 272.96 473.216 423.04C467.2 429.056 467.072 438.656 472.896 444.416c0 0-6.72-6.656 1.6 1.6C496.064 467.648 528.64 500.224 528.64 500.224 534.464 506.048 544 505.856 550.016 499.904l150.08-150.144 67.328 66.432c9.024 8.96 27.456 4.544 30.4-8.96 19.968-92.608 46.656-227.52 46.656-227.52 6.848-34.496-16.192-56.704-49.92-49.92 0 0-134.656 26.816-227.328 46.784C560.32 178.048 556.352 182.272 554.752 187.136c-3.2 6.208-3.008 14.208 3.776 20.992L623.36 272.96z"></path>
+  <path d="M841.152 457.152c-30.528 0-54.784 24.512-54.784 54.656l0 274.752L237.696 786.56 237.696 237.696l206.016 0c6.656 0 10.752 0 13.248 0C487.68 237.696 512 213.184 512 182.848 512 152.32 487.36 128 456.96 128L183.04 128C153.216 128 128 152.576 128 182.848c0 3.136 0.256 6.272 0.768 9.28C128.256 195.136 128 198.272 128 201.408l0 639.488c0 0.064 0 0.192 0 0.256 0 0.128 0 0.192 0 0.32 0 30.528 24.512 54.784 54.784 54.784l646.976 0c6.592 0 9.728 0 11.712 0 28.736 0 52.928-22.976 54.464-51.968C896 843.264 896 842.304 896 841.344l0-20.352L896 561.408 896 512.128C896 481.792 871.424 457.152 841.152 457.152z"></path>
+</svg>
+
+              </i>
+            </a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      Jessun
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://jessun1990.github.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://jessun1990.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://jessun1990.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://jessun1990.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://gohugo.io" rel="noopener" target="_blank">
+              external-link
+              
+              <i class="iconfont">
+                <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M623.36 272.96 473.216 423.04C467.2 429.056 467.072 438.656 472.896 444.416c0 0-6.72-6.656 1.6 1.6C496.064 467.648 528.64 500.224 528.64 500.224 534.464 506.048 544 505.856 550.016 499.904l150.08-150.144 67.328 66.432c9.024 8.96 27.456 4.544 30.4-8.96 19.968-92.608 46.656-227.52 46.656-227.52 6.848-34.496-16.192-56.704-49.92-49.92 0 0-134.656 26.816-227.328 46.784C560.32 178.048 556.352 182.272 554.752 187.136c-3.2 6.208-3.008 14.208 3.776 20.992L623.36 272.96z"></path>
+  <path d="M841.152 457.152c-30.528 0-54.784 24.512-54.784 54.656l0 274.752L237.696 786.56 237.696 237.696l206.016 0c6.656 0 10.752 0 13.248 0C487.68 237.696 512 213.184 512 182.848 512 152.32 487.36 128 456.96 128L183.04 128C153.216 128 128 152.576 128 182.848c0 3.136 0.256 6.272 0.768 9.28C128.256 195.136 128 198.272 128 201.408l0 639.488c0 0.064 0 0.192 0 0.256 0 0.128 0 0.192 0 0.32 0 30.528 24.512 54.784 54.784 54.784l646.976 0c6.592 0 9.728 0 11.712 0 28.736 0 52.928-22.976 54.464-51.968C896 843.264 896 842.304 896 841.344l0-20.352L896 561.408 896 512.128C896 481.792 871.424 457.152 841.152 457.152z"></path>
+</svg>
+
+              </i>
+            </a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Elastic 基本小结</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-05-15" class="post-time">
+          2019-05-15
+        </time>
+        <div class="post-category">
+            <a href="https://jessun1990.github.io/categories/code/"> Code </a>
+            
+          </div>
+        <span class="more-meta"> 约 3404 字 </span>
+          <span class="more-meta"> 预计阅读 7 分钟 </span>
+
+        
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#1-简介">1. 简介</a></li>
+<li><a href="#2-基本概念">2. 基本概念</a></li>
+<li><a href="#3-elasticsearch-查询语法">3. ElasticSearch 查询语法</a>
+<ul>
+<li><a href="#3-1-query-查询">3.1 Query 查询</a>
+<ul>
+<li><a href="#3-1-1-获取-es-基本信息">3.1.1 获取 es 基本信息</a></li>
+<li><a href="#3-1-2-获取指定-id-的文档信息">3.1.2 获取指定 id 的文档信息</a></li>
+<li><a href="#3-1-3-match-query-符合-user-id-为-1000-如果是中文还会做分词">3.1.3 Match query，符合 user_id 为 1000。如果是中文还会做分词。</a></li>
+<li><a href="#3-1-4-range-query">3.1.4 Range query</a></li>
+<li><a href="#3-1-5-term-query">3.1.5 Term query</a></li>
+<li><a href="#3-1-6-terms-query">3.1.6 Terms query</a></li>
+</ul></li>
+<li><a href="#3-2-aggregation-聚合">3.2 Aggregation 聚合</a>
+<ul>
+<li><a href="#3-2-1-度量-metric-聚合">3.2.1 度量(Metric)聚合</a>
+<ul>
+<li><a href="#3-2-1-1-min-aggregation">3.2.1.1 Min Aggregation</a></li>
+<li><a href="#3-2-1-2-max-aggregation">3.2.1.2 Max Aggregation</a></li>
+<li><a href="#3-2-1-3-sum-aggregation">3.2.1.3 Sum Aggregation</a></li>
+<li><a href="#3-2-1-4-avg-aggregation">3.2.1.4 Avg Aggregation</a></li>
+<li><a href="#3-2-1-5-stats-aggregation">3.2.1.5 Stats Aggregation</a></li>
+<li><a href="#3-2-1-6-top-hists-aggregation">3.2.1.6 Top Hists Aggregation</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      
+
+<h1 id="1-简介">1. 简介</h1>
+
+<blockquote>
+<p>Elasticsearch 是一个基于 Lucene 库的搜索引擎。它提供了一个分布式、支持多租户的全文搜索引擎，具有 HTTP Web 接口和无模式JSON文档。Elasticsearch 是用 Java 开发的，并在 Apache 许可证下作为开源软件发布。（源引维基百科：<a href="https://zh.wikipedia.org/wiki/Elasticsearch">Elasticsearch</a>）</p>
+</blockquote>
+
+<p><strong>优势</strong></p>
+
+<ul>
+<li>横向可扩展性：增加服务器可直接配置在集群中。</li>
+<li>分片机制提供更好的分布性：分而治之的方式来提升处理效率。</li>
+<li>高可用：提供复制（replica）机制</li>
+<li>实时性：通过将磁盘上的文件放入文件缓存系统来提高查询速度</li>
+</ul>
+
+<h1 id="2-基本概念">2. 基本概念</h1>
+
+<ul>
+<li><strong>Index</strong>: 一系列文档的集合，类似与 mysql 中数据库的概念。</li>
+<li><strong>Type</strong>: 在 Index 里面可以定义不同的 type，type 的概念类似于 mysql 中表的概念，是一系列具有相同特征数据的结合。</li>
+<li><strong>Document</strong>: 文档的概念类似于 mysql 中的一条存储记录，并且为 json 格式，在 Index 下的不同 type 下，可以有许多 document。</li>
+<li><strong>Shards</strong>: 在数据量很大的时候，进行水平的扩展，提高搜索性能。</li>
+<li><strong>Replicas</strong>: 防止某个分片的数据丢失，可以并行地在备份数据里的搜索提高性能。</li>
+</ul>
+
+<h1 id="3-elasticsearch-查询语法">3. ElasticSearch 查询语法</h1>
+
+<blockquote>
+<p>参考: <a href="https://www.elastic.co/guide/cn/elasticsearch/guide/current/index.html" title="语法参考">&lt;&lt; Elasticsearch: 权威指南 &gt;&gt;</a></p>
+</blockquote>
+
+<h2 id="3-1-query-查询">3.1 Query 查询</h2>
+
+<h3 id="3-1-1-获取-es-基本信息">3.1.1 获取 es 基本信息</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">`GET xxx.xxx.xxx.xxx:9200`
+
+返回结果：
+
+```json
+{
+    &#34;status&#34; : 200,
+    &#34;name&#34; : &#34;search_server&#34;,
+    &#34;cluster_name&#34; : &#34;es01&#34;,
+    &#34;version&#34; : {
+        &#34;number&#34; : &#34;1.5.2&#34;,
+        &#34;build_hash&#34; : &#34;${buildNumber}&#34;,
+        &#34;build_timestamp&#34; : &#34;2017-04-14T06:28:51Z&#34;,
+        &#34;build_snapshot&#34; : false,
+        &#34;lucene_version&#34; : &#34;4.10.4&#34;
+    },
+    &#34;tagline&#34; : &#34;You Know, for Search&#34;
+}
+```</pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-1-2-获取指定-id-的文档信息">3.1.2 获取指定 id 的文档信息</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">`GET xxx.xxx.xxx.xxx:9200/{index}/{type}/{id}`
+
+返回结果：
+
+```json
+{
+    &#34;_index&#34;: &#34;student&#34;,
+    &#34;_type&#34;: &#34;default&#34;,
+    &#34;_id&#34;: &#34;1&#34;,
+    &#34;_version&#34;: 3,
+    &#34;found&#34;: true,
+    &#34;_source&#34;: {
+        &#34;id&#34;: &#34;1&#34;,
+        &#34;name&#34;: &#34;张三&#34;,
+        &#34;company_id&#34;: 68,
+        &#34;user_id&#34;: 1000,
+        &#34;created_at&#34;: &#34;2019-04-28T19: 59: 01.821525+08: 00&#34;
+    }
+}
+```</pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-1-3-match-query-符合-user-id-为-1000-如果是中文还会做分词">3.1.3 Match query，符合 user_id 为 1000。如果是中文还会做分词。</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">`GET xxx.xxx.xxx.xxx:9200/{index}/_search`
+
+返回结果
+
+```json
+{
+    &#34;query&#34;: {
+        &#34;match&#34;: {
+            &#34;user_id&#34;: 1000
+        }
+    }
+}
+```</pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-1-4-range-query">3.1.4 Range query</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&gt; 支持包含时间在内的范围查询
+
+`GET xxx.xxx.xxx.xxx:9200/{index}/_search`
+
+```json
+{
+    &#34;query&#34;: {
+        &#34;range&#34;: {
+            &#34;created_at&#34;: {
+            &#34;gte&#34;:  1557761682,
+            &#34;lte&#34;:  1557771682
+            }
+        }
+    }:
+}
+```</pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-1-5-term-query">3.1.5 Term query</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&gt; term 查询被用于精确值匹配，这些精确值可能是**数字**、**时间**、**布尔**或者那些 not_analyzed 的字符串。term 查询对于输入的不做分析， 所以它将进行精确查询。
+
+```json
+GET /_search
+{
+    &#34;query&#34;: {
+        &#34;term&#34;: {
+            &#34;company_id&#34;: 100
+        }
+    }
+}
+```</pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-1-6-terms-query">3.1.6 Terms query</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&gt; terms 查询和 term 查询一样，但它允许你指定多值进行匹配，如果这个字段包含了指定值中的任何一个值，那么这个文档就算是满足条件。
+
+```json
+{
+    &#34;terms&#34;: {
+        &#34;company_id&#34;: [ 100, 101, 102 ]
+    }
+}
+```</pre></td></tr></table>
+</div>
+</div>
+<h2 id="3-2-aggregation-聚合">3.2 Aggregation 聚合</h2>
+
+<p>Elasticsearch 有一个功能叫做聚合(aggregation)，可以在数据上生成复杂的分析统计，类似 SQL 中的 group by。</p>
+
+<p>Aggregation 分为两种：</p>
+
+<ul>
+<li>Metrics, Metrics 是最简单的对过滤出来的数据集进行avg，max等操作，是一个单一的数值。</li>
+<li>Bucket, Bucket 则是将过滤出来的数据集分成多个小数据集，然后 Metrics 分别作用在这些小数据集上</li>
+</ul>
+
+<p>Elasticsearch 从1.0开始支持 aggregation，基本上有了普通 SQL 的聚合能力。从2.0开始支持 pipline aggregaion，可以支持类似 SQL sub query 的嵌套聚合能力。
+Metrics 既可以作用在整个数据集上，也可以作为 Bucket 的子聚合作用在每一个“桶”中的数据集上。</p>
+
+<p>ES 中的聚合 API 的调用格式如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl  -XGET <span class="s1">&#39;xxx.xxx.xxx.xxx:9200/megacorp/employee/_search&#39;</span> -d
+<span class="s1">&#39;
+</span><span class="s1">{
+</span><span class="s1">    &#34;aggs&#34;: {                    // 固定字段名，也可以用 aggregations
+</span><span class="s1">        &#34;all_interests&#34;: {       // 自定义名称
+</span><span class="s1">            &#34;terms&#34;: {&#34;field&#34;: &#34;intersets&#34;}
+</span><span class="s1">        }
+</span><span class="s1">    }
+</span><span class="s1">}
+</span><span class="s1">&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h3 id="3-2-1-度量-metric-聚合">3.2.1 度量(Metric)聚合</h3>
+
+<h4 id="3-2-1-1-min-aggregation">3.2.1.1 Min Aggregation</h4>
+
+<p>最小值查询，作用在 number 类型字段上。查询2班最小的年龄值。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl -XPOST <span class="s1">&#39;xxx.xxx.xxx.xxx:9200/student/student/_search?&#39;</span> -d
+<span class="s1">&#39;{
+</span><span class="s1">    &#34;query&#34;: {
+</span><span class="s1">        &#34;term&#34;: {
+</span><span class="s1">            &#34;class_no&#34;: 2
+</span><span class="s1">        }
+</span><span class="s1">    },
+</span><span class="s1">    &#34;aggregation&#34;: {
+</span><span class="s1">        &#34;min_age&#34;: {
+</span><span class="s1">            &#34;min&#34;: {
+</span><span class="s1">                &#34;field&#34;: &#34;age&#34;
+</span><span class="s1">            }
+</span><span class="s1">        }
+</span><span class="s1">    }
+</span><span class="s1">}&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>返回结果</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;took&#34;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>                     <span class="err">//</span> <span class="err">前面部分数据与普通的查询数据相同</span>
+        <span class="nt">&#34;timed_out&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="nt">&#34;_shards&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;total&#34;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="nt">&#34;successful&#34;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="nt">&#34;failed&#34;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;hits&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;total&#34;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="nt">&#34;max_score&#34;</span><span class="p">:</span> <span class="mf">1.4054651</span><span class="p">,</span>
+            <span class="nt">&#34;hits&#34;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="nt">&#34;_index&#34;</span><span class="p">:</span> <span class="s2">&#34;student&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;_type&#34;</span><span class="p">:</span> <span class="s2">&#34;student&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;_id&#34;</span><span class="p">:</span> <span class="s2">&#34;2&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;_score&#34;</span><span class="p">:</span> <span class="mf">1.4054651</span><span class="p">,</span>
+                <span class="nt">&#34;_source&#34;</span><span class="p">:</span> <span class="p">{</span>        <span class="err">//</span> <span class="err">source</span> <span class="err">字段内容即是存入的数据</span>
+                    <span class="nt">&#34;studentNo&#34;</span><span class="p">:</span> <span class="s2">&#34;2&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;关羽&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;male&#34;</span><span class="p">:</span> <span class="s2">&#34;男&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="s2">&#34;22&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;birthday&#34;</span><span class="p">:</span> <span class="s2">&#34;1987-08-23&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;classNo&#34;</span><span class="p">:</span> <span class="s2">&#34;2&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;isLeader&#34;</span><span class="p">:</span> <span class="s2">&#34;false&#34;</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="nt">&#34;_index&#34;</span><span class="p">:</span> <span class="s2">&#34;student&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;_type&#34;</span><span class="p">:</span> <span class="s2">&#34;student&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;_id&#34;</span><span class="p">:</span> <span class="s2">&#34;8&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;_score&#34;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="nt">&#34;_source&#34;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&#34;studentNo&#34;</span><span class="p">:</span> <span class="s2">&#34;8&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;赵云&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;male&#34;</span><span class="p">:</span> <span class="s2">&#34;男&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="s2">&#34;23&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;birthday&#34;</span><span class="p">:</span> <span class="s2">&#34;1986-10-26&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;classNo&#34;</span><span class="p">:</span> <span class="s2">&#34;2&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;isLeader&#34;</span><span class="p">:</span> <span class="s2">&#34;false&#34;</span>
+                <span class="p">}</span>
+            <span class="p">},</span>
+            <span class="p">{</span>
+                <span class="nt">&#34;_index&#34;</span><span class="p">:</span> <span class="s2">&#34;student&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;_type&#34;</span><span class="p">:</span> <span class="s2">&#34;student&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;_id&#34;</span><span class="p">:</span> <span class="s2">&#34;5&#34;</span><span class="p">,</span>
+                <span class="nt">&#34;_score&#34;</span><span class="p">:</span> <span class="mf">0.30685282</span><span class="p">,</span>
+                <span class="nt">&#34;_source&#34;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="nt">&#34;studentNo&#34;</span><span class="p">:</span> <span class="s2">&#34;5&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;诸葛亮&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;male&#34;</span><span class="p">:</span> <span class="s2">&#34;男&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;age&#34;</span><span class="p">:</span> <span class="s2">&#34;18&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;birthday&#34;</span><span class="p">:</span> <span class="s2">&#34;1992-04-27&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;classNo&#34;</span><span class="p">:</span> <span class="s2">&#34;2&#34;</span><span class="p">,</span>
+                    <span class="nt">&#34;isLeader&#34;</span><span class="p">:</span> <span class="s2">&#34;true&#34;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="nt">&#34;aggregations&#34;</span><span class="p">:</span> <span class="p">{</span>                      <span class="err">//</span> <span class="err">聚合结果</span>
+            <span class="nt">&#34;min_age&#34;</span><span class="p">:</span> <span class="p">{</span>                       <span class="err">//</span> <span class="err">前面输入的聚合名</span>
+                <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>                   <span class="err">//</span> <span class="err">聚合后的数据</span>
+                <span class="nt">&#34;value_as_string&#34;</span><span class="p">:</span> <span class="s2">&#34;18.0&#34;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>聚合查询，先通过 query 过滤数据，返回的结果会包含聚合操作所用的数据全集。
+有时候我们对作用的数据全集并不太感兴趣，仅仅需要最终的聚合结果，可以通过查询类型（search_type）参数来实现这个需求。下面查询出来的数据量会大大减少，ES 内部也会在查询时减少一些耗时的查询，所以查询效率会提高。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl -XPOST <span class="s1">&#39;xxx.xxx.xxx.xxx:9200/student/_search?search_type=count&#39;</span> -d
+<span class="s1">&#39;
+</span><span class="s1">{
+</span><span class="s1">    &#34;query&#34;: {
+</span><span class="s1">        &#34;term&#34;: {
+</span><span class="s1">            &#34;class_no&#34;: &#34;2&#34;
+</span><span class="s1">        }
+</span><span class="s1">    },
+</span><span class="s1">    &#34;aggs&#34;: {
+</span><span class="s1">        &#34;min_age&#34;: {
+</span><span class="s1">            &#34;min&#34;: {
+</span><span class="s1">                &#34;field&#34;: &#34;age&#34;
+</span><span class="s1">            }
+</span><span class="s1">        }
+</span><span class="s1">    }
+</span><span class="s1">}
+</span><span class="s1">&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>返回结果：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="err">...</span>
+    <span class="nt">&#34;aggregations&#34;</span><span class="p">:</span> <span class="p">{</span>                   <span class="err">//</span> <span class="err">聚合结果</span>
+        <span class="nt">&#34;min_age&#34;</span><span class="p">:</span> <span class="p">{</span>                    <span class="err">//</span> <span class="err">前面输入的聚合名</span>
+            <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>                <span class="err">//</span> <span class="err">聚合后的数据</span>
+            <span class="nt">&#34;value_as_string&#34;</span><span class="p">:</span> <span class="s2">&#34;18.0&#34;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="3-2-1-2-max-aggregation">3.2.1.2 Max Aggregation</h4>
+
+<p>最大值查询。下面查询2班的最大的年龄值，查询结果为23。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl -XPOST <span class="s1">&#39;xxx.xxx.xxx.xxx:9200/student/sutudent/_search?search_type=count&#39;</span> -d
+<span class="s1">&#39;
+</span><span class="s1">{
+</span><span class="s1">    &#34;query&#34;: {
+</span><span class="s1">        &#34;term&#34;: {
+</span><span class="s1">            &#34;class_no&#34;: &#34;2&#34;
+</span><span class="s1">        }
+</span><span class="s1">    },
+</span><span class="s1">    &#34;aggs&#34;: {
+</span><span class="s1">        &#34;max_age&#34;: {
+</span><span class="s1">            &#34;max&#34;: {
+</span><span class="s1">                &#34;field&#34;: &#34;age&#34;
+</span><span class="s1">            }
+</span><span class="s1">        }
+</span><span class="s1">    }
+</span><span class="s1">}
+</span><span class="s1">&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="3-2-1-3-sum-aggregation">3.2.1.3 Sum Aggregation</h4>
+
+<p>数值求和。下面统计查询2班的年龄总和，查询结果为63。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl -XPOST <span class="s1">&#39;xxx.xxx.xxx.xxx:9200/sutudent/student/_search?search_type=count&#39;</span> -d
+<span class="s1">&#39;
+</span><span class="s1">{
+</span><span class="s1">    &#34;query&#34;: {
+</span><span class="s1">        &#34;term&#34;: {
+</span><span class="s1">            &#34;class_no&#34;: &#34;2&#34;
+</span><span class="s1">        }
+</span><span class="s1">    },
+</span><span class="s1">    &#34;aggs&#34;: {
+</span><span class="s1">        &#34;sum_age&#34;: {
+</span><span class="s1">            &#34;sum&#34;: {
+</span><span class="s1">                &#34;field&#34;: &#34;age&#34;
+</span><span class="s1">            }
+</span><span class="s1">        }
+</span><span class="s1">    }
+</span><span class="s1">}
+</span><span class="s1">&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="3-2-1-4-avg-aggregation">3.2.1.4 Avg Aggregation</h4>
+
+<p>计算平均值。下面计算查询2班的年龄平均值，结果为21。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl -XPOST <span class="s1">&#39;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&#39;</span> -d
+<span class="s1">&#39;{
+</span><span class="s1">    &#34;query&#34;: {
+</span><span class="s1">        &#34;term&#34;: {
+</span><span class="s1">            &#34;class_no&#34;: &#34;2&#34;
+</span><span class="s1">        }
+</span><span class="s1">    },
+</span><span class="s1">    &#34;aggs&#34;: {
+</span><span class="s1">        &#34;&#34;
+</span><span class="s1">    },
+</span><span class="s1">    {
+</span><span class="s1">        &#34;aggs&#34;: {
+</span><span class="s1">            &#34;avg_age&#34;: {
+</span><span class="s1">                &#34;avg&#34;: {
+</span><span class="s1">                    &#34;filed&#34; &#34;age&#34;
+</span><span class="s1">                }
+</span><span class="s1">            }
+</span><span class="s1">        }
+</span><span class="s1">    }
+</span><span class="s1">}&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="3-2-1-5-stats-aggregation">3.2.1.5 Stats Aggregation</h4>
+
+<p>统计查询，一次性统计出某个字段上的常用统计值。下面对整个学校的学生进行简单地统计</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl -XPOST <span class="s1">&#39;xxx.xxx.xxx.xxx:9200/student/sutudent/_search?search_type=count&#39;</span> -d
+<span class="s1">&#39;
+</span><span class="s1">{
+</span><span class="s1">    &#34;aggs&#34;: {
+</span><span class="s1">        &#34;stats_age&#34;: {
+</span><span class="s1">            &#34;stats&#34;: {
+</span><span class="s1">                &#34;field&#34; : &#34;age&#34;
+</span><span class="s1">            }
+</span><span class="s1">        }
+</span><span class="s1">    &#39;</span><span class="o">}</span>
+<span class="o">}</span>
+<span class="err">&#39;</span></code></pre></td></tr></table>
+</div>
+</div>
+<p>返回结果：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="err">...</span>
+    <span class="nt">&#34;aggregations&#34;</span><span class="p">:</span>  <span class="p">{</span>
+        <span class="nt">&#34;stats_age&#34;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="nt">&#34;count&#34;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="nt">&#34;min&#34;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+            <span class="nt">&#34;max&#34;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span>
+            <span class="nt">&#34;avg&#34;</span><span class="p">:</span> <span class="mf">20.125</span><span class="p">,</span>
+            <span class="nt">&#34;sum&#34;</span><span class="p">:</span> <span class="mi">161</span><span class="p">,</span>
+            <span class="nt">&#34;min_as_string&#34;</span><span class="p">:</span> <span class="s2">&#34;16.0&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;max_as_string&#34;</span><span class="p">:</span> <span class="s2">&#34;24.0&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;avg_as_string&#34;</span><span class="p">:</span> <span class="s2">&#34;20.125&#34;</span><span class="p">,</span>
+            <span class="nt">&#34;sum_as_string&#34;</span><span class="p">:</span> <span class="s2">&#34;161.0&#34;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div>
+<h4 id="3-2-1-6-top-hists-aggregation">3.2.1.6 Top Hists Aggregation</h4>
+
+<p>取出符合条件的前n条数据记录。下面查询全校年龄排在前2位的学生，仅需返回学生的姓名和年龄</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">curl -XPOST <span class="s1">&#39;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&#39;</span> -d
+<span class="s1">&#39;
+</span><span class="s1">{
+</span><span class="s1">    &#34;aggs&#34;: {
+</span><span class="s1">        &#34;top_age&#34;: {
+</span><span class="s1">            &#34;top_hits&#34;: {
+</span><span class="s1">                &#34;sort&#34;: [
+</span><span class="s1">                    {
+</span><span class="s1">                        &#34;age&#34;: {
+</span><span class="s1">                        &#34;order&#34;: &#34;desc&#34;
+</span><span class="s1">                        }
+</span><span class="s1">                    }
+</span><span class="s1">                ],
+</span><span class="s1">                &#34;_source&#34;:{
+</span><span class="s1">                    &#34;include&#34;: [
+</span><span class="s1">                        &#34;name&#34;, &#34;age&#34;
+</span><span class="s1">                    ]
+</span><span class="s1">                },
+</span><span class="s1">                &#34;size&#34;: 2
+</span><span class="s1">            }
+</span><span class="s1">        }
+</span><span class="s1">    }
+</span><span class="s1">}
+</span><span class="s1">&#39;</span>
+
+返回结果：</code></pre></td></tr></table>
+</div>
+</div>
+<p>json
+{
+    &ldquo;aggregations&rdquo;: {
+    &ldquo;top_age&rdquo;: {
+      &ldquo;hits&rdquo;: {
+        &ldquo;total&rdquo;: 9,
+        &ldquo;max_score&rdquo;: null,
+        &ldquo;hits&rdquo;: [
+          {
+            &ldquo;_index&rdquo;: &ldquo;student&rdquo;,
+            &ldquo;_type&rdquo;: &ldquo;student&rdquo;,
+            &ldquo;_id&rdquo;: &ldquo;1&rdquo;,
+            &ldquo;_score&rdquo;: null,
+            &ldquo;_source&rdquo;: {
+              &ldquo;name&rdquo;: &ldquo;刘备&rdquo;,
+              &ldquo;age&rdquo;: &ldquo;24&rdquo;
+            },
+            &ldquo;sort&rdquo;: [
+              24
+            ]
+          },
+          {
+            &ldquo;_index&rdquo;: &ldquo;student&rdquo;,
+            &ldquo;_type&rdquo;: &ldquo;student&rdquo;,
+            &ldquo;_id&rdquo;: &ldquo;8&rdquo;,
+            &ldquo;_score&rdquo;: null,
+            &ldquo;_source&rdquo;: {
+              &ldquo;name&rdquo;: &ldquo;赵云&rdquo;,
+              &ldquo;age&rdquo;: &ldquo;23&rdquo;
+            },
+            &ldquo;sort&rdquo;: [
+              23
+            ]
+          }
+        ]
+      }
+    }
+  }
+}</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">#### 3.2.2 桶类型（Bucket）聚合
+
+#### 3.2.2.1 Terms Aggregation
+
+按照指定的一个或者多个字段将数据划分成若干个小的区间，计算落在每一个区间上记录的数量，并按指定顺序进行排序。下面按照每个班的学生数，并按照学生数从小到大进行排序，取学生数靠前的2个班级。</pre></td></tr></table>
+</div>
+</div>
+<p>shell
+curl -XPOST &lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&rsquo; -d
+&lsquo;
+{
+    &ldquo;aggs&rdquo;: {
+        &ldquo;terms_class_no&rdquo;: {
+            &ldquo;terms&rdquo;: {
+                &ldquo;field&rdquo;: &ldquo;class_no&rdquo;,      // 按照班号进行分组
+                &ldquo;order&rdquo;: {               // 按照学生数从大到小排序
+                    &ldquo;_count&rdquo;: &ldquo;desc&rdquo;
+                },
+                &ldquo;size&rdquo;: 2
+            }
+        }
+    }
+}
+&lsquo;</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">&gt; 值得注意的是，结果是一个近似值，这和 ES 的[实现方式](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html)有关。如果想要去的精确值，需要自行进行全量排序（也就是移除 Size 字段），然后“手动”取前两条记录。当然，这样使得 ES 的效率非常低
+
+#### 3.2.2.2 Range Aggregation
+
+自定义的范围聚合，可以按照指定的范围划分区间对数据进行分组统计。</pre></td></tr></table>
+</div>
+</div>
+<p>shell
+curl -XPOST &lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&rsquo; -d
+&lsquo;
+{
+    &ldquo;aggs&rdquo;: {
+        &ldquo;range_age&rdquo;: {
+            &ldquo;range&rdquo;: [
+                &ldquo;field&rdquo;: &ldquo;age&rdquo;,
+            &ldquo;ranges&rdquo;: [
+                {&ldquo;to&rdquo;: 15},
+                {&ldquo;from&rdquo;: 16, &ldquo;to&rdquo;: 18},
+                {&ldquo;from&rdquo;: 19, &ldquo;to&rdquo;: 21},
+                {&ldquo;from&rdquo;: 22, &ldquo;to&rdquo;: 24},
+                {&ldquo;from&rdquo;: &ldquo;25&rdquo;}
+            ]
+            ]
+        }
+    }
+}
+&lsquo;</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">#### 3.2.2.3 Date Range Aggregation
+
+时间区间聚合专门针对date类型的字段，它与Range Aggregation的主要区别是其可以使用时间运算表达式。主要包括+（加法）运算、-（减法）运算和/（四舍五入）运算，每种运算都可以作用在不同的时间域上面，下面是一些时间运算表达式示例。</pre></td></tr></table>
+</div>
+</div>
+<p>shell
+curl -XPOST &lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&rsquo; -d
+&lsquo;
+{
+    &ldquo;aggs&rdquo;: {
+        &ldquo;range_age&rdquo;: {
+            &ldquo;date_range&rdquo;: {
+                &ldquo;field&rdquo;: &ldquo;birthday&rdquo;,
+                &ldquo;range&rdquo;: [
+                    {
+                        &ldquo;to&rdquo;: &ldquo;now-25y&rdquo;
+                    }
+                ]
+            }
+        }
+    }
+}
+&lsquo;</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">#### 3.2.2.4 Histogram Aggregation
+
+直方图聚合。将某个类型字段等分成 n 份，统计落在每一个区间的记录数，和 Range 聚合非常像。 Range 聚合可以任意划分区间，而 Histogram 做等距划分。</pre></td></tr></table>
+</div>
+</div>
+<p>shell
+curl -XPOST &lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&rsquo; -d
+&lsquo;
+{
+    &ldquo;aggs&rdquo;: {
+        &ldquo;histogram_age&rdquo;: {
+            &ldquo;hisgogram&rdquo;: {
+                &ldquo;field&rdquo;: &ldquo;age&rdquo;,
+                &ldquo;interval&rdquo;: 2,            // 返回各年龄段内的学生数量
+                &ldquo;min_doc_count&rdquo;: 1        // 只返回记录数量大于1的区间
+            }
+        }
+    }
+}
+&lsquo;</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">#### 3.2.2.5 Date Histogram Aggregation
+
+时间直方图聚合。专门针对时间类型的字段做直方图聚合，可以按照固定的时间段进行统计。</pre></td></tr></table>
+</div>
+</div>
+<p>shell
+curl -XPOST &lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&rsquo; -d
+&lsquo;
+{
+    &ldquo;aggs&rdquo;: {
+        &ldquo;date_histogram_birthday&rdquo;: {
+            &ldquo;date_histogram&rdquo;: {
+                &ldquo;field&rdquo;: &ldquo;birthday&rdquo;,
+                &ldquo;interval&rdquo;: &ldquo;year&rdquo;,       // 按年统计
+                &ldquo;format&rdquo;: &ldquo;yyyy&rdquo;          // 返回结果的 key 的格式
+            }
+        }
+    }
+}
+&lsquo;</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">获得的结果如下，由于指定了 format 字段，所以 key_as_string 只返回了年的信息</pre></td></tr></table>
+</div>
+</div>
+<p>json
+{
+    &ldquo;buckets&rdquo;: [
+        {
+            &ldquo;key_as_string&rdquo;: &ldquo;1985&rdquo;,
+            &ldquo;key&rdquo;: 473385600000,
+            &ldquo;doc_count&rdquo;: 1
+        },{
+            &ldquo;key_as_string&rdquo;: &ldquo;1986&rdquo;,
+            &ldquo;key&rdquo;: 504921600000,
+            &ldquo;doc_count&rdquo;: 1
+        }
+        &hellip;&hellip;
+    ]
+}</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">#### 3.2.2.6 Missing Aggregation
+
+值缺损聚合，单桶聚合。最终只会产生一个“桶”。下面统计学生信息中地址栏缺损的记录数量。</pre></td></tr></table>
+</div>
+</div>
+<p>json
+curl -XPOST &lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&rsquo; -d
+&lsquo;
+{
+    &ldquo;aggs&rdquo;: {
+        &ldquo;missing_address&rdquo;: {
+            &ldquo;missing&rdquo;: {
+                &ldquo;field&rdquo;: &ldquo;address&rdquo;
+            }
+        }
+    }
+}
+&lsquo;</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">### 嵌套使用</pre></td></tr></table>
+</div>
+</div>
+<p>json
+curl -XPOST &lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&rsquo; -d
+&lsquo;
+{
+    &ldquo;aggs&rdquo;: {
+        &ldquo;missing_address&rdquo;: {
+            &ldquo;terms&rdquo;: {
+                &ldquo;field&rdquo;: &ldquo;class_no&rdquo;
+            },
+            &ldquo;aggs&rdquo;: {                // 一个子聚合
+                &ldquo;max_age&rdquo;: {
+                    &ldquo;max&rdquo;: {
+                        &ldquo;field&rdquo;: &ldquo;age&rdquo;
+                    }
+                }
+            }
+        }
+    }
+}
+&lsquo;</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><span class="lnt">1
+</span></pre></td>
+<td class="lntd">
+<pre class="chroma">获得的结果：</pre></td></tr></table>
+</div>
+</div>
+<p>shell
+{
+    &ldquo;buckets&rdquo;: [
+        {
+            &ldquo;key&rdquo;: &ldquo;1&rdquo;,
+            &ldquo;doc_count&rdquo;: 3,
+            &ldquo;max_age&rdquo;: {
+                &ldquo;value&rdquo;: 24,
+                &ldquo;value_as_string&rdquo;: &ldquo;24.0&rdquo;
+            }
+        },
+        {
+            &ldquo;key&rdquo;: &ldquo;2&rdquo;,
+            &ldquo;doc_count&rdquo;: 3,
+            &ldquo;max_age&rdquo;: {
+                &ldquo;value&rdquo;: 23,
+                &ldquo;value_as_string&rdquo;: &ldquo;23.0&rdquo;
+            }
+        },
+        {
+            &ldquo;key&rdquo;: &ldquo;3&rdquo;,
+            &ldquo;doc_count&rdquo;: 1,
+            &ldquo;max_age&rdquo;: {
+                &ldquo;value&rdquo;: 20,
+                &ldquo;value_as_string&rdquo;: &ldquo;20.0&rdquo;
+            }
+        },
+        {
+            &ldquo;key&rdquo;: &ldquo;4&rdquo;,
+            &ldquo;doc_count&rdquo;: 1,
+            &ldquo;max_age&rdquo;: {
+                &ldquo;value&rdquo;: 16,
+                &ldquo;value_as_string&rdquo;: &ldquo;16.0&rdquo;
+            }
+        }
+    ]
+}
+```</p>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">jessun</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+      2019-09-02
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content"><a rel="license noopener" href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">GPLv3</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://jessun1990.github.io/tags/golang/">golang</a>
+          <a href="https://jessun1990.github.io/tags/elasticsearch/">elasticsearch</a>
+          <a href="https://jessun1990.github.io/tags/es/">es</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/dotfiles/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Linux / Mac 系统 dotfiles 文件备份还原最佳实践</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="mailto:jessun1990&#43;blog@gmail.com" rel="me noopener" class="iconfont"
+      title="email" >
+      <svg class="icon" viewBox="0 0 1451 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M664.781909 681.472759 0 97.881301C0 3.997201 71.046997 0 71.046997 0L474.477909 0 961.649408 0 1361.641813 0C1361.641813 0 1432.688811 3.997201 1432.688811 97.881301L771.345323 681.472759C771.345323 681.472759 764.482731 685.154773 753.594283 688.65053L753.594283 688.664858C741.602731 693.493018 729.424896 695.068979 718.077952 694.839748 706.731093 695.068979 694.553173 693.493018 682.561621 688.664858L682.561621 688.65053C671.644501 685.140446 664.781909 681.472759 664.781909 681.472759L664.781909 681.472759ZM718.063616 811.603883C693.779541 811.016482 658.879232 802.205449 619.10784 767.734955 542.989056 701.759633 0 212.052267 0 212.052267L0 942.809523C0 942.809523 0 1024 83.726336 1024L682.532949 1024 753.579947 1024 1348.948139 1024C1432.688811 1024 1432.688811 942.809523 1432.688811 942.809523L1432.688811 212.052267C1432.688811 212.052267 893.138176 701.759633 817.019477 767.734955 777.248 802.205449 742.347691 811.03081 718.063616 811.603883L718.063616 811.603883Z"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://jessun1990.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    2019
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        jessun
+        
+      </span></span>
+
+  
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,1296 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Jessun&#39;s Blog</title>
+    <link>https://jessun1990.github.io/</link>
+    <description>Recent content on Jessun&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sat, 25 May 2019 00:00:00 +0000</lastBuildDate>
+    
+        <atom:link href="https://jessun1990.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Linux / Mac 系统 dotfiles 文件备份还原最佳实践</title>
+      <link>https://jessun1990.github.io/post/dotfiles/</link>
+      <pubDate>Sat, 25 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://jessun1990.github.io/post/dotfiles/</guid>
+      
+        <description>
+
+&lt;h2 id=&#34;github-上的-dotfiles-管理&#34;&gt;Github 上的 Dotfiles 管理&lt;/h2&gt;
+
+&lt;p&gt;在使用 Linux 和 Mac 系统时候， 常常需要同步 dotfiles。比如 fish 的配置文件在 ~/.config/fish/config.fish，vim 的配置文件在 ~/.vim/vimrc 等等。Github 有个&lt;a href=&#34;https://dotfiles.github.io&#34;&gt; 非官方指南 &lt;/a&gt;。&lt;/p&gt;
+
+&lt;h2 id=&#34;使用-git-repo-方式管理-dotfiles&#34;&gt;使用 Git Repo 方式管理 dotfiles&lt;/h2&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;参考: &lt;a href=&#34;https://www.atlassian.com/git/tutorials/dotfiles&#34;&gt;The best way to store your dotfiles: A bare Git repository&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&#34;开始&#34;&gt;开始&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;git init --bare &lt;span class=&#34;nv&#34;&gt;$HOME&lt;/span&gt;/.cfg
+&lt;span class=&#34;nb&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;config&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME&amp;#39;&lt;/span&gt;
+config config --local status.showUntrackedFiles no
+&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;alias config=&amp;#39;/usr/bin/git --git-dir=&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$HOME&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;/.cfg/ --work-tree=&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$HOME&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#39;&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; &lt;span class=&#34;nv&#34;&gt;$HOME&lt;/span&gt;/.bashrc&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;第一行创建一个文件夹 &lt;code&gt;~/.cfg&lt;/code&gt;，一个 &lt;a href=&#34;http://www.saintsjd.com/2011/01/what-is-a-bare-git-repository/&#34;&gt; Git bare repository &lt;/a&gt;，用来管理我们的 dotfiles。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;创建一个 alias 名为 config 的命令，用来进行操作。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;隐藏其他我们没有明确是否跟踪的文件。这样，当使用 &lt;code&gt;config status&lt;/code&gt; 命令的时候，不会显示其他无关的文件。&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;将这个别名命令写入 .bashrc 文件。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;执行完以上设置之后，$HOME 文件夹中的任何文件都可以用命令进行版本控制。例如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;config status
+config add ~/.vim/vimrc
+config commit -m &lt;span class=&#34;s1&#34;&gt;&amp;#39;Add vimrc&amp;#39;&lt;/span&gt;
+config add ~/.bashrc
+config commit -m &lt;span class=&#34;s1&#34;&gt;&amp;#39;Add bashrc&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;这时候，就可以把这个 git 仓库 push 到 github 或者其他远程仓库上。&lt;/p&gt;
+
+&lt;h2 id=&#34;在新系统上下载和使用设置&#34;&gt;在新系统上下载和使用设置&lt;/h2&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;首先依旧新建 alias，忽略 .cfg 文件夹。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;nb&#34;&gt;alias&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;config&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME&amp;#39;&lt;/span&gt;
+&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;.cfg&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; .gitignore&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;下载备份的配置&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;git clone --bare &amp;lt;git-repo-url&amp;gt; &lt;span class=&#34;nv&#34;&gt;$HOME&lt;/span&gt;/.cfg&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;检出分支内容&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;config checkout&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;上面的步骤可能会失败，并显示类似的如下消息：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;error: The following untracked working tree files would be overwritten by checkout:
+    .bashrc
+    .gitignore
+Please move or remove them before you can switch branches.
+Aborting&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;将这些已经存在的文件移动到备份文件夹：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;mkdir -p .config-backup &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;config checkout &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&amp;gt;&lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; egrep &lt;span class=&#34;s2&#34;&gt;&amp;#34;\s+\.&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; awk &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;print $1&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;xargs -I&lt;span class=&#34;o&#34;&gt;{}&lt;/span&gt; mv &lt;span class=&#34;o&#34;&gt;{}&lt;/span&gt; .config-backup/&lt;span class=&#34;o&#34;&gt;{}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;再次检出&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;config checkout&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;这样就可以一直更新并 push 自己的配置仓库了。&lt;/p&gt;
+</description>
+      
+    </item>
+    
+    <item>
+      <title>Elastic 基本小结</title>
+      <link>https://jessun1990.github.io/post/es-intro/</link>
+      <pubDate>Wed, 15 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://jessun1990.github.io/post/es-intro/</guid>
+      
+        <description>
+
+&lt;h1 id=&#34;1-简介&#34;&gt;1. 简介&lt;/h1&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Elasticsearch 是一个基于 Lucene 库的搜索引擎。它提供了一个分布式、支持多租户的全文搜索引擎，具有 HTTP Web 接口和无模式JSON文档。Elasticsearch 是用 Java 开发的，并在 Apache 许可证下作为开源软件发布。（源引维基百科：&lt;a href=&#34;https://zh.wikipedia.org/wiki/Elasticsearch&#34;&gt;Elasticsearch&lt;/a&gt;）&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;优势&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;横向可扩展性：增加服务器可直接配置在集群中。&lt;/li&gt;
+&lt;li&gt;分片机制提供更好的分布性：分而治之的方式来提升处理效率。&lt;/li&gt;
+&lt;li&gt;高可用：提供复制（replica）机制&lt;/li&gt;
+&lt;li&gt;实时性：通过将磁盘上的文件放入文件缓存系统来提高查询速度&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;2-基本概念&#34;&gt;2. 基本概念&lt;/h1&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Index&lt;/strong&gt;: 一系列文档的集合，类似与 mysql 中数据库的概念。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Type&lt;/strong&gt;: 在 Index 里面可以定义不同的 type，type 的概念类似于 mysql 中表的概念，是一系列具有相同特征数据的结合。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Document&lt;/strong&gt;: 文档的概念类似于 mysql 中的一条存储记录，并且为 json 格式，在 Index 下的不同 type 下，可以有许多 document。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Shards&lt;/strong&gt;: 在数据量很大的时候，进行水平的扩展，提高搜索性能。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Replicas&lt;/strong&gt;: 防止某个分片的数据丢失，可以并行地在备份数据里的搜索提高性能。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&#34;3-elasticsearch-查询语法&#34;&gt;3. ElasticSearch 查询语法&lt;/h1&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;参考: &lt;a href=&#34;https://www.elastic.co/guide/cn/elasticsearch/guide/current/index.html&#34; title=&#34;语法参考&#34;&gt;&amp;lt;&amp;lt; Elasticsearch: 权威指南 &amp;gt;&amp;gt;&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&#34;3-1-query-查询&#34;&gt;3.1 Query 查询&lt;/h2&gt;
+
+&lt;h3 id=&#34;3-1-1-获取-es-基本信息&#34;&gt;3.1.1 获取 es 基本信息&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;`GET xxx.xxx.xxx.xxx:9200`
+
+返回结果：
+
+```json
+{
+    &amp;#34;status&amp;#34; : 200,
+    &amp;#34;name&amp;#34; : &amp;#34;search_server&amp;#34;,
+    &amp;#34;cluster_name&amp;#34; : &amp;#34;es01&amp;#34;,
+    &amp;#34;version&amp;#34; : {
+        &amp;#34;number&amp;#34; : &amp;#34;1.5.2&amp;#34;,
+        &amp;#34;build_hash&amp;#34; : &amp;#34;${buildNumber}&amp;#34;,
+        &amp;#34;build_timestamp&amp;#34; : &amp;#34;2017-04-14T06:28:51Z&amp;#34;,
+        &amp;#34;build_snapshot&amp;#34; : false,
+        &amp;#34;lucene_version&amp;#34; : &amp;#34;4.10.4&amp;#34;
+    },
+    &amp;#34;tagline&amp;#34; : &amp;#34;You Know, for Search&amp;#34;
+}
+```&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 id=&#34;3-1-2-获取指定-id-的文档信息&#34;&gt;3.1.2 获取指定 id 的文档信息&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;`GET xxx.xxx.xxx.xxx:9200/{index}/{type}/{id}`
+
+返回结果：
+
+```json
+{
+    &amp;#34;_index&amp;#34;: &amp;#34;student&amp;#34;,
+    &amp;#34;_type&amp;#34;: &amp;#34;default&amp;#34;,
+    &amp;#34;_id&amp;#34;: &amp;#34;1&amp;#34;,
+    &amp;#34;_version&amp;#34;: 3,
+    &amp;#34;found&amp;#34;: true,
+    &amp;#34;_source&amp;#34;: {
+        &amp;#34;id&amp;#34;: &amp;#34;1&amp;#34;,
+        &amp;#34;name&amp;#34;: &amp;#34;张三&amp;#34;,
+        &amp;#34;company_id&amp;#34;: 68,
+        &amp;#34;user_id&amp;#34;: 1000,
+        &amp;#34;created_at&amp;#34;: &amp;#34;2019-04-28T19: 59: 01.821525+08: 00&amp;#34;
+    }
+}
+```&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 id=&#34;3-1-3-match-query-符合-user-id-为-1000-如果是中文还会做分词&#34;&gt;3.1.3 Match query，符合 user_id 为 1000。如果是中文还会做分词。&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;`GET xxx.xxx.xxx.xxx:9200/{index}/_search`
+
+返回结果
+
+```json
+{
+    &amp;#34;query&amp;#34;: {
+        &amp;#34;match&amp;#34;: {
+            &amp;#34;user_id&amp;#34;: 1000
+        }
+    }
+}
+```&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 id=&#34;3-1-4-range-query&#34;&gt;3.1.4 Range query&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&amp;gt; 支持包含时间在内的范围查询
+
+`GET xxx.xxx.xxx.xxx:9200/{index}/_search`
+
+```json
+{
+    &amp;#34;query&amp;#34;: {
+        &amp;#34;range&amp;#34;: {
+            &amp;#34;created_at&amp;#34;: {
+            &amp;#34;gte&amp;#34;:  1557761682,
+            &amp;#34;lte&amp;#34;:  1557771682
+            }
+        }
+    }:
+}
+```&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 id=&#34;3-1-5-term-query&#34;&gt;3.1.5 Term query&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&amp;gt; term 查询被用于精确值匹配，这些精确值可能是**数字**、**时间**、**布尔**或者那些 not_analyzed 的字符串。term 查询对于输入的不做分析， 所以它将进行精确查询。
+
+```json
+GET /_search
+{
+    &amp;#34;query&amp;#34;: {
+        &amp;#34;term&amp;#34;: {
+            &amp;#34;company_id&amp;#34;: 100
+        }
+    }
+}
+```&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 id=&#34;3-1-6-terms-query&#34;&gt;3.1.6 Terms query&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&amp;gt; terms 查询和 term 查询一样，但它允许你指定多值进行匹配，如果这个字段包含了指定值中的任何一个值，那么这个文档就算是满足条件。
+
+```json
+{
+    &amp;#34;terms&amp;#34;: {
+        &amp;#34;company_id&amp;#34;: [ 100, 101, 102 ]
+    }
+}
+```&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h2 id=&#34;3-2-aggregation-聚合&#34;&gt;3.2 Aggregation 聚合&lt;/h2&gt;
+
+&lt;p&gt;Elasticsearch 有一个功能叫做聚合(aggregation)，可以在数据上生成复杂的分析统计，类似 SQL 中的 group by。&lt;/p&gt;
+
+&lt;p&gt;Aggregation 分为两种：&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Metrics, Metrics 是最简单的对过滤出来的数据集进行avg，max等操作，是一个单一的数值。&lt;/li&gt;
+&lt;li&gt;Bucket, Bucket 则是将过滤出来的数据集分成多个小数据集，然后 Metrics 分别作用在这些小数据集上&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Elasticsearch 从1.0开始支持 aggregation，基本上有了普通 SQL 的聚合能力。从2.0开始支持 pipline aggregaion，可以支持类似 SQL sub query 的嵌套聚合能力。
+Metrics 既可以作用在整个数据集上，也可以作为 Bucket 的子聚合作用在每一个“桶”中的数据集上。&lt;/p&gt;
+
+&lt;p&gt;ES 中的聚合 API 的调用格式如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;curl  -XGET &lt;span class=&#34;s1&#34;&gt;&amp;#39;xxx.xxx.xxx.xxx:9200/megacorp/employee/_search&amp;#39;&lt;/span&gt; -d
+&lt;span class=&#34;s1&#34;&gt;&amp;#39;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;{
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;aggs&amp;#34;: {                    // 固定字段名，也可以用 aggregations
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;all_interests&amp;#34;: {       // 自定义名称
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;terms&amp;#34;: {&amp;#34;field&amp;#34;: &amp;#34;intersets&amp;#34;}
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;}
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h3 id=&#34;3-2-1-度量-metric-聚合&#34;&gt;3.2.1 度量(Metric)聚合&lt;/h3&gt;
+
+&lt;h4 id=&#34;3-2-1-1-min-aggregation&#34;&gt;3.2.1.1 Min Aggregation&lt;/h4&gt;
+
+&lt;p&gt;最小值查询，作用在 number 类型字段上。查询2班最小的年龄值。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;curl -XPOST &lt;span class=&#34;s1&#34;&gt;&amp;#39;xxx.xxx.xxx.xxx:9200/student/student/_search?&amp;#39;&lt;/span&gt; -d
+&lt;span class=&#34;s1&#34;&gt;&amp;#39;{
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;query&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;term&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;class_no&amp;#34;: 2
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    },
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;aggregation&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;min_age&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;min&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                &amp;#34;field&amp;#34;: &amp;#34;age&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;}&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;返回结果&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;28
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;29
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;30
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;31
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;32
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;33
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;34
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;35
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;36
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;37
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;38
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;39
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;40
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;41
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;42
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;43
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;44
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;45
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;46
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;47
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;48
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;49
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;50
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;51
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;52
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;53
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;54
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;55
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;56
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;57
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;58
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;59
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;60
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;61
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;62
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;63
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;64
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;65
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;66
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;nt&#34;&gt;&amp;#34;took&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;19&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                     &lt;span class=&#34;err&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;前面部分数据与普通的查询数据相同&lt;/span&gt;
+        &lt;span class=&#34;nt&#34;&gt;&amp;#34;timed_out&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+        &lt;span class=&#34;nt&#34;&gt;&amp;#34;_shards&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;total&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;successful&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;failed&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+        &lt;span class=&#34;nt&#34;&gt;&amp;#34;hits&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;total&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;max_score&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;1.4054651&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;hits&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_index&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;student&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_type&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;student&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_score&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;1.4054651&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_source&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;        &lt;span class=&#34;err&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;source&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;字段内容即是存入的数据&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;studentNo&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;关羽&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;male&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;男&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;age&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;22&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;birthday&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;1987-08-23&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;classNo&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;isLeader&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_index&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;student&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_type&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;student&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;8&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_score&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_source&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;studentNo&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;8&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;赵云&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;male&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;男&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;age&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;23&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;birthday&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;1986-10-26&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;classNo&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;isLeader&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_index&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;student&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_type&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;student&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;5&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_score&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;0.30685282&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;_source&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;studentNo&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;5&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;诸葛亮&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;male&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;男&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;age&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;18&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;birthday&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;1992-04-27&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;classNo&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                    &lt;span class=&#34;nt&#34;&gt;&amp;#34;isLeader&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;
+                &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+        &lt;span class=&#34;nt&#34;&gt;&amp;#34;aggregations&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;                      &lt;span class=&#34;err&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;聚合结果&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;min_age&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;                       &lt;span class=&#34;err&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;前面输入的聚合名&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;value&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;18&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                   &lt;span class=&#34;err&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;聚合后的数据&lt;/span&gt;
+                &lt;span class=&#34;nt&#34;&gt;&amp;#34;value_as_string&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;18.0&amp;#34;&lt;/span&gt;
+            &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;聚合查询，先通过 query 过滤数据，返回的结果会包含聚合操作所用的数据全集。
+有时候我们对作用的数据全集并不太感兴趣，仅仅需要最终的聚合结果，可以通过查询类型（search_type）参数来实现这个需求。下面查询出来的数据量会大大减少，ES 内部也会在查询时减少一些耗时的查询，所以查询效率会提高。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;curl -XPOST &lt;span class=&#34;s1&#34;&gt;&amp;#39;xxx.xxx.xxx.xxx:9200/student/_search?search_type=count&amp;#39;&lt;/span&gt; -d
+&lt;span class=&#34;s1&#34;&gt;&amp;#39;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;{
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;query&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;term&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;class_no&amp;#34;: &amp;#34;2&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    },
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;aggs&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;min_age&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;min&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                &amp;#34;field&amp;#34;: &amp;#34;age&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;}
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;返回结果：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;err&#34;&gt;...&lt;/span&gt;
+    &lt;span class=&#34;nt&#34;&gt;&amp;#34;aggregations&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;                   &lt;span class=&#34;err&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;聚合结果&lt;/span&gt;
+        &lt;span class=&#34;nt&#34;&gt;&amp;#34;min_age&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;                    &lt;span class=&#34;err&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;前面输入的聚合名&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;value&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;18&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                &lt;span class=&#34;err&#34;&gt;//&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;聚合后的数据&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;value_as_string&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;18.0&amp;#34;&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h4 id=&#34;3-2-1-2-max-aggregation&#34;&gt;3.2.1.2 Max Aggregation&lt;/h4&gt;
+
+&lt;p&gt;最大值查询。下面查询2班的最大的年龄值，查询结果为23。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;curl -XPOST &lt;span class=&#34;s1&#34;&gt;&amp;#39;xxx.xxx.xxx.xxx:9200/student/sutudent/_search?search_type=count&amp;#39;&lt;/span&gt; -d
+&lt;span class=&#34;s1&#34;&gt;&amp;#39;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;{
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;query&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;term&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;class_no&amp;#34;: &amp;#34;2&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    },
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;aggs&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;max_age&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;max&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                &amp;#34;field&amp;#34;: &amp;#34;age&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;}
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h4 id=&#34;3-2-1-3-sum-aggregation&#34;&gt;3.2.1.3 Sum Aggregation&lt;/h4&gt;
+
+&lt;p&gt;数值求和。下面统计查询2班的年龄总和，查询结果为63。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;curl -XPOST &lt;span class=&#34;s1&#34;&gt;&amp;#39;xxx.xxx.xxx.xxx:9200/sutudent/student/_search?search_type=count&amp;#39;&lt;/span&gt; -d
+&lt;span class=&#34;s1&#34;&gt;&amp;#39;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;{
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;query&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;term&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;class_no&amp;#34;: &amp;#34;2&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    },
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;aggs&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;sum_age&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;sum&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                &amp;#34;field&amp;#34;: &amp;#34;age&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;}
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h4 id=&#34;3-2-1-4-avg-aggregation&#34;&gt;3.2.1.4 Avg Aggregation&lt;/h4&gt;
+
+&lt;p&gt;计算平均值。下面计算查询2班的年龄平均值，结果为21。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;curl -XPOST &lt;span class=&#34;s1&#34;&gt;&amp;#39;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&amp;#39;&lt;/span&gt; -d
+&lt;span class=&#34;s1&#34;&gt;&amp;#39;{
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;query&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;term&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;class_no&amp;#34;: &amp;#34;2&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    },
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;aggs&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    },
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;aggs&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;avg_age&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                &amp;#34;avg&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                    &amp;#34;filed&amp;#34; &amp;#34;age&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;}&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h4 id=&#34;3-2-1-5-stats-aggregation&#34;&gt;3.2.1.5 Stats Aggregation&lt;/h4&gt;
+
+&lt;p&gt;统计查询，一次性统计出某个字段上的常用统计值。下面对整个学校的学生进行简单地统计&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;curl -XPOST &lt;span class=&#34;s1&#34;&gt;&amp;#39;xxx.xxx.xxx.xxx:9200/student/sutudent/_search?search_type=count&amp;#39;&lt;/span&gt; -d
+&lt;span class=&#34;s1&#34;&gt;&amp;#39;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;{
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;aggs&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;stats_age&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;stats&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                &amp;#34;field&amp;#34; : &amp;#34;age&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;err&#34;&gt;&amp;#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;返回结果：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;err&#34;&gt;...&lt;/span&gt;
+    &lt;span class=&#34;nt&#34;&gt;&amp;#34;aggregations&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;  &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+        &lt;span class=&#34;nt&#34;&gt;&amp;#34;stats_age&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;count&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;min&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;max&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;24&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;avg&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;20.125&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;sum&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;161&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;min_as_string&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;16.0&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;max_as_string&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;24.0&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;avg_as_string&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;20.125&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;nt&#34;&gt;&amp;#34;sum_as_string&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;161.0&amp;#34;&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;h4 id=&#34;3-2-1-6-top-hists-aggregation&#34;&gt;3.2.1.6 Top Hists Aggregation&lt;/h4&gt;
+
+&lt;p&gt;取出符合条件的前n条数据记录。下面查询全校年龄排在前2位的学生，仅需返回学生的姓名和年龄&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;curl -XPOST &lt;span class=&#34;s1&#34;&gt;&amp;#39;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&amp;#39;&lt;/span&gt; -d
+&lt;span class=&#34;s1&#34;&gt;&amp;#39;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;{
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#34;aggs&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        &amp;#34;top_age&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            &amp;#34;top_hits&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                &amp;#34;sort&amp;#34;: [
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                    {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                        &amp;#34;age&amp;#34;: {
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                        &amp;#34;order&amp;#34;: &amp;#34;desc&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                    }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                ],
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                &amp;#34;_source&amp;#34;:{
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                    &amp;#34;include&amp;#34;: [
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                        &amp;#34;name&amp;#34;, &amp;#34;age&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                    ]
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                },
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;                &amp;#34;size&amp;#34;: 2
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;            }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;        }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;    }
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;}
+&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;
+
+返回结果：&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;json
+{
+    &amp;ldquo;aggregations&amp;rdquo;: {
+    &amp;ldquo;top_age&amp;rdquo;: {
+      &amp;ldquo;hits&amp;rdquo;: {
+        &amp;ldquo;total&amp;rdquo;: 9,
+        &amp;ldquo;max_score&amp;rdquo;: null,
+        &amp;ldquo;hits&amp;rdquo;: [
+          {
+            &amp;ldquo;_index&amp;rdquo;: &amp;ldquo;student&amp;rdquo;,
+            &amp;ldquo;_type&amp;rdquo;: &amp;ldquo;student&amp;rdquo;,
+            &amp;ldquo;_id&amp;rdquo;: &amp;ldquo;1&amp;rdquo;,
+            &amp;ldquo;_score&amp;rdquo;: null,
+            &amp;ldquo;_source&amp;rdquo;: {
+              &amp;ldquo;name&amp;rdquo;: &amp;ldquo;刘备&amp;rdquo;,
+              &amp;ldquo;age&amp;rdquo;: &amp;ldquo;24&amp;rdquo;
+            },
+            &amp;ldquo;sort&amp;rdquo;: [
+              24
+            ]
+          },
+          {
+            &amp;ldquo;_index&amp;rdquo;: &amp;ldquo;student&amp;rdquo;,
+            &amp;ldquo;_type&amp;rdquo;: &amp;ldquo;student&amp;rdquo;,
+            &amp;ldquo;_id&amp;rdquo;: &amp;ldquo;8&amp;rdquo;,
+            &amp;ldquo;_score&amp;rdquo;: null,
+            &amp;ldquo;_source&amp;rdquo;: {
+              &amp;ldquo;name&amp;rdquo;: &amp;ldquo;赵云&amp;rdquo;,
+              &amp;ldquo;age&amp;rdquo;: &amp;ldquo;23&amp;rdquo;
+            },
+            &amp;ldquo;sort&amp;rdquo;: [
+              23
+            ]
+          }
+        ]
+      }
+    }
+  }
+}&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;#### 3.2.2 桶类型（Bucket）聚合
+
+#### 3.2.2.1 Terms Aggregation
+
+按照指定的一个或者多个字段将数据划分成若干个小的区间，计算落在每一个区间上记录的数量，并按指定顺序进行排序。下面按照每个班的学生数，并按照学生数从小到大进行排序，取学生数靠前的2个班级。&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;shell
+curl -XPOST &amp;lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&amp;rsquo; -d
+&amp;lsquo;
+{
+    &amp;ldquo;aggs&amp;rdquo;: {
+        &amp;ldquo;terms_class_no&amp;rdquo;: {
+            &amp;ldquo;terms&amp;rdquo;: {
+                &amp;ldquo;field&amp;rdquo;: &amp;ldquo;class_no&amp;rdquo;,      // 按照班号进行分组
+                &amp;ldquo;order&amp;rdquo;: {               // 按照学生数从大到小排序
+                    &amp;ldquo;_count&amp;rdquo;: &amp;ldquo;desc&amp;rdquo;
+                },
+                &amp;ldquo;size&amp;rdquo;: 2
+            }
+        }
+    }
+}
+&amp;lsquo;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&amp;gt; 值得注意的是，结果是一个近似值，这和 ES 的[实现方式](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html)有关。如果想要去的精确值，需要自行进行全量排序（也就是移除 Size 字段），然后“手动”取前两条记录。当然，这样使得 ES 的效率非常低
+
+#### 3.2.2.2 Range Aggregation
+
+自定义的范围聚合，可以按照指定的范围划分区间对数据进行分组统计。&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;shell
+curl -XPOST &amp;lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&amp;rsquo; -d
+&amp;lsquo;
+{
+    &amp;ldquo;aggs&amp;rdquo;: {
+        &amp;ldquo;range_age&amp;rdquo;: {
+            &amp;ldquo;range&amp;rdquo;: [
+                &amp;ldquo;field&amp;rdquo;: &amp;ldquo;age&amp;rdquo;,
+            &amp;ldquo;ranges&amp;rdquo;: [
+                {&amp;ldquo;to&amp;rdquo;: 15},
+                {&amp;ldquo;from&amp;rdquo;: 16, &amp;ldquo;to&amp;rdquo;: 18},
+                {&amp;ldquo;from&amp;rdquo;: 19, &amp;ldquo;to&amp;rdquo;: 21},
+                {&amp;ldquo;from&amp;rdquo;: 22, &amp;ldquo;to&amp;rdquo;: 24},
+                {&amp;ldquo;from&amp;rdquo;: &amp;ldquo;25&amp;rdquo;}
+            ]
+            ]
+        }
+    }
+}
+&amp;lsquo;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;#### 3.2.2.3 Date Range Aggregation
+
+时间区间聚合专门针对date类型的字段，它与Range Aggregation的主要区别是其可以使用时间运算表达式。主要包括+（加法）运算、-（减法）运算和/（四舍五入）运算，每种运算都可以作用在不同的时间域上面，下面是一些时间运算表达式示例。&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;shell
+curl -XPOST &amp;lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&amp;rsquo; -d
+&amp;lsquo;
+{
+    &amp;ldquo;aggs&amp;rdquo;: {
+        &amp;ldquo;range_age&amp;rdquo;: {
+            &amp;ldquo;date_range&amp;rdquo;: {
+                &amp;ldquo;field&amp;rdquo;: &amp;ldquo;birthday&amp;rdquo;,
+                &amp;ldquo;range&amp;rdquo;: [
+                    {
+                        &amp;ldquo;to&amp;rdquo;: &amp;ldquo;now-25y&amp;rdquo;
+                    }
+                ]
+            }
+        }
+    }
+}
+&amp;lsquo;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;#### 3.2.2.4 Histogram Aggregation
+
+直方图聚合。将某个类型字段等分成 n 份，统计落在每一个区间的记录数，和 Range 聚合非常像。 Range 聚合可以任意划分区间，而 Histogram 做等距划分。&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;shell
+curl -XPOST &amp;lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&amp;rsquo; -d
+&amp;lsquo;
+{
+    &amp;ldquo;aggs&amp;rdquo;: {
+        &amp;ldquo;histogram_age&amp;rdquo;: {
+            &amp;ldquo;hisgogram&amp;rdquo;: {
+                &amp;ldquo;field&amp;rdquo;: &amp;ldquo;age&amp;rdquo;,
+                &amp;ldquo;interval&amp;rdquo;: 2,            // 返回各年龄段内的学生数量
+                &amp;ldquo;min_doc_count&amp;rdquo;: 1        // 只返回记录数量大于1的区间
+            }
+        }
+    }
+}
+&amp;lsquo;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;#### 3.2.2.5 Date Histogram Aggregation
+
+时间直方图聚合。专门针对时间类型的字段做直方图聚合，可以按照固定的时间段进行统计。&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;shell
+curl -XPOST &amp;lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&amp;rsquo; -d
+&amp;lsquo;
+{
+    &amp;ldquo;aggs&amp;rdquo;: {
+        &amp;ldquo;date_histogram_birthday&amp;rdquo;: {
+            &amp;ldquo;date_histogram&amp;rdquo;: {
+                &amp;ldquo;field&amp;rdquo;: &amp;ldquo;birthday&amp;rdquo;,
+                &amp;ldquo;interval&amp;rdquo;: &amp;ldquo;year&amp;rdquo;,       // 按年统计
+                &amp;ldquo;format&amp;rdquo;: &amp;ldquo;yyyy&amp;rdquo;          // 返回结果的 key 的格式
+            }
+        }
+    }
+}
+&amp;lsquo;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;获得的结果如下，由于指定了 format 字段，所以 key_as_string 只返回了年的信息&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;json
+{
+    &amp;ldquo;buckets&amp;rdquo;: [
+        {
+            &amp;ldquo;key_as_string&amp;rdquo;: &amp;ldquo;1985&amp;rdquo;,
+            &amp;ldquo;key&amp;rdquo;: 473385600000,
+            &amp;ldquo;doc_count&amp;rdquo;: 1
+        },{
+            &amp;ldquo;key_as_string&amp;rdquo;: &amp;ldquo;1986&amp;rdquo;,
+            &amp;ldquo;key&amp;rdquo;: 504921600000,
+            &amp;ldquo;doc_count&amp;rdquo;: 1
+        }
+        &amp;hellip;&amp;hellip;
+    ]
+}&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;#### 3.2.2.6 Missing Aggregation
+
+值缺损聚合，单桶聚合。最终只会产生一个“桶”。下面统计学生信息中地址栏缺损的记录数量。&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;json
+curl -XPOST &amp;lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&amp;rsquo; -d
+&amp;lsquo;
+{
+    &amp;ldquo;aggs&amp;rdquo;: {
+        &amp;ldquo;missing_address&amp;rdquo;: {
+            &amp;ldquo;missing&amp;rdquo;: {
+                &amp;ldquo;field&amp;rdquo;: &amp;ldquo;address&amp;rdquo;
+            }
+        }
+    }
+}
+&amp;lsquo;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;### 嵌套使用&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;json
+curl -XPOST &amp;lsquo;xxx.xxx.xxx.xxx:9200/student/student/_search?search_type=count&amp;rsquo; -d
+&amp;lsquo;
+{
+    &amp;ldquo;aggs&amp;rdquo;: {
+        &amp;ldquo;missing_address&amp;rdquo;: {
+            &amp;ldquo;terms&amp;rdquo;: {
+                &amp;ldquo;field&amp;rdquo;: &amp;ldquo;class_no&amp;rdquo;
+            },
+            &amp;ldquo;aggs&amp;rdquo;: {                // 一个子聚合
+                &amp;ldquo;max_age&amp;rdquo;: {
+                    &amp;ldquo;max&amp;rdquo;: {
+                        &amp;ldquo;field&amp;rdquo;: &amp;ldquo;age&amp;rdquo;
+                    }
+                }
+            }
+        }
+    }
+}
+&amp;lsquo;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;获得的结果：&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;shell
+{
+    &amp;ldquo;buckets&amp;rdquo;: [
+        {
+            &amp;ldquo;key&amp;rdquo;: &amp;ldquo;1&amp;rdquo;,
+            &amp;ldquo;doc_count&amp;rdquo;: 3,
+            &amp;ldquo;max_age&amp;rdquo;: {
+                &amp;ldquo;value&amp;rdquo;: 24,
+                &amp;ldquo;value_as_string&amp;rdquo;: &amp;ldquo;24.0&amp;rdquo;
+            }
+        },
+        {
+            &amp;ldquo;key&amp;rdquo;: &amp;ldquo;2&amp;rdquo;,
+            &amp;ldquo;doc_count&amp;rdquo;: 3,
+            &amp;ldquo;max_age&amp;rdquo;: {
+                &amp;ldquo;value&amp;rdquo;: 23,
+                &amp;ldquo;value_as_string&amp;rdquo;: &amp;ldquo;23.0&amp;rdquo;
+            }
+        },
+        {
+            &amp;ldquo;key&amp;rdquo;: &amp;ldquo;3&amp;rdquo;,
+            &amp;ldquo;doc_count&amp;rdquo;: 1,
+            &amp;ldquo;max_age&amp;rdquo;: {
+                &amp;ldquo;value&amp;rdquo;: 20,
+                &amp;ldquo;value_as_string&amp;rdquo;: &amp;ldquo;20.0&amp;rdquo;
+            }
+        },
+        {
+            &amp;ldquo;key&amp;rdquo;: &amp;ldquo;4&amp;rdquo;,
+            &amp;ldquo;doc_count&amp;rdquo;: 1,
+            &amp;ldquo;max_age&amp;rdquo;: {
+                &amp;ldquo;value&amp;rdquo;: 16,
+                &amp;ldquo;value_as_string&amp;rdquo;: &amp;ldquo;16.0&amp;rdquo;
+            }
+        }
+    ]
+}
+```&lt;/p&gt;
+</description>
+      
+    </item>
+    
+  </channel>
+</rss>
