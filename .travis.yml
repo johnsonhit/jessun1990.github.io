@@ -1,0 +1,25 @@
+language: go
+
+branches:
+  only:
+    - src
+
+git:
+  depth: 1
+
+install: go get -v github.com/gohugoio/hugo
+
+script:
+  - hugo
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_API_KEY
+  on:
+    branches: src
+  local_dir: public
+  repo: jessun1990/jessun1990.github.io
+  target_branch: master
+  email: deploy@travis-ci.org
+  name: deployment-bot
